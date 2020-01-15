@@ -81,7 +81,6 @@ describe "Expectation Matchers" do
             expect(5..10).to  cover(9)
         end
         
-
     end
     
     describe "collection matchers" do
@@ -229,7 +228,6 @@ describe "Expectation Matchers" do
             expect(customer.has_pending_order?).to be true # same as this
         end
         
-
     end
     
 end
