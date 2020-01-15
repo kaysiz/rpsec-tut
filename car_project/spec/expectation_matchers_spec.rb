@@ -1,4 +1,4 @@
-describe "a Expectation Matchers" do
+describe "Expectation Matchers" do
     
     describe "equivalent matchers" do
         
