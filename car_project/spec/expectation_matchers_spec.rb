@@ -126,5 +126,110 @@ describe "a Expectation Matchers" do
         
     end
     
+    describe "other useful matchers" do
+        
+        it "will match string with a regex" do
+            # This string matcher is a good wat to "spot check" strings
+            string = 'The order has been received.'
+            expect(string).to match(/order(.+)received/)
+            
+            expect('123').to match(/\d{3}/)
+            expect(123).not_to match(/\d{3}/) # only words with strings
+            
+            email = 'someone@somewhere.com'
+            expect(email).to match(/\A\w+@\w+\.\w{3}\Z/)  
+        end
 
+        it "will match object types" do
+            expect('test').to be_instance_of(String)
+            expect('text').to be_an_instance_of(String) # alias of #be_instance_of
+            
+            expect('test').to be_kind_of(String)
+            expect('test').to be_a_kind_of(String) # alias of #be_kind_of
+            expect('test').to be_a(String)  # alias of #be_kind_of
+            expect([1,2,3]).to be_an(Array) # alias of #be_kind_of  
+        end
+        
+        it "will match objects with #respond_to" do
+            string = 'test'
+            expect(string).to respond_to(:length)
+            expect(string).not_to respond_to(:sort) 
+        end
+        
+        it "will match class instances with #have_attributes" do
+            class Car
+                attr_accessor :make, :year, :color
+            end
+            car = Car.new
+            car.make = 'Dodge'
+            car.year = 2001
+            car.color = 'blue'
+
+            expect(car).to have_attributes(:color => 'blue')
+            expect(car).to have_attributes(
+                :make => 'Dodge',
+                :year => 2001,
+                :color => 'blue'
+            ) 
+        end
+        
+        it "will match anything with #satisfy" do
+            # This is the most flexible matcher
+            expect(10).to satisfy do |value|
+                (value >= 5) && (value <= 10) && (value % 2 == 0)
+            end  
+        end
+        
+    end
+    
+    describe "predicate matchers" do
+        
+        it "will match be_* to custom methods ending in ?" do
+            # drops "be_", adds "?" to end, calls method on object
+            # Can use these when methods end in "?", require no arguments,
+            # and return true/false
+
+            # with built-n methods
+            expect([]).to be_empty # [].empty?
+            expect(1).to be_integer # 1.integer?
+            expect(0).to be_zero # 0.zero?
+            expect(1).to be_nonzero # 1.nonzero?
+            expect(1).to be_odd # 1.odd?
+            expect(2).to be_even # 2.even?
+            
+            # be_nil is actually an example of this too
+
+            # with custom methods
+            class Product
+                def visible?; true; end
+            end
+            product = Product.new
+
+            expect(product).to be_visible # product.visible?
+            expect(product.visible?).to be true # exactly the same as this
+        end
+        
+        it "will match have_* to custom methods like has_*?" do
+            # changes "have_" to "has_", adds "?" to end, calls method on object
+            # Can use these when methods start with "has_", end in "?",
+            # and return true/false. Can have arguments, but not required.
+
+            # with built-in methods
+            hash = {:a => 1, :b => 2}
+            expect(hash).to have_key(:a) # hash.has_key?
+            expect(hash).to have_value(2) # hash.has_value?
+
+            # with custom methods
+            class Customer
+                def has_pending_order?; true; end
+            end
+            customer = Customer.new
+
+            expect(customer).to have_pending_order # customer.has_pending_order?
+            expect(customer.has_pending_order?).to be true # same as this
+        end
+        
+
+    end
+    
 end
